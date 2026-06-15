@@ -1,12 +1,18 @@
 #include "InterfaceConsole.h"
 #include <iostream>
 #include <iomanip>
-#include <termios.h>
-#include <unistd.h>
 #include <algorithm>
 #include <limits> 
 #include <regex> 
 #include <ctime>
+#include <cstdlib>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <termios.h>
+#include <unistd.h>
+#endif
 
 #define RESET   "\033[0m"
 #define GREEN   "\033[32m"
@@ -336,15 +342,27 @@ void InterfaceConsole::handleUserSession(std::shared_ptr<Account> acc) {
 }
 
 void InterfaceConsole::setStdinEcho(bool enable) {
-    struct termios tty;
-    tcgetattr(STDIN_FILENO, &tty);
-    if (!enable) {
-        tty.c_lflag &= ~ECHO;
-    } else {
-        tty.c_lflag |= ECHO;
+    #ifdef _WIN32
+        HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+        DWORD mode;
+        GetConsoleMode(hStdin, &mode);
+        if (!enable) {
+            mode &= ~ENABLE_ECHO_INPUT;
+        } else {
+            mode |= ENABLE_ECHO_INPUT;
+        }
+        SetConsoleMode(hStdin, mode);
+    #else
+        struct termios tty;
+        tcgetattr(STDIN_FILENO, &tty);
+        if (!enable) {
+            tty.c_lflag &= ~ECHO;
+        } else {
+            tty.c_lflag |= ECHO;
+        }
+        (void)tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+    #endif
     }
-    (void)tcsetattr(STDIN_FILENO, TCSANOW, &tty);
-}
 
 void InterfaceConsole::handleViewProfile(std::shared_ptr<Account> acc) {
     while (true) {
