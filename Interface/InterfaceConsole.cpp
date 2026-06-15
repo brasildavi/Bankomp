@@ -109,7 +109,8 @@ void InterfaceConsole::handleLogin() {
             if (attempts > 0) {
                 std::cout << RED << "Conta ou senha incorretas. Você tem " << attempts << " tentativa(s) restante(s).\n" << RESET;
             } else {
-                std::cout << RED << "Número máximo de tentativas atingido. Retornando ao menu principal...\n" << RESET;
+                std::cout << RED << "\n[SEGURANÇA] Número máximo de tentativas atingido. Encerrando o programa...\n" << RESET;
+                std::exit(1);
             }
         }
     }
