@@ -267,6 +267,11 @@ void InterfaceConsole::handleUserSession(std::shared_ptr<Account> acc) {
             int destNumber = readIntSafe("Digite o número da conta destino (ou 0 para VOLTAR): ");
             if (destNumber == 0) continue;
 
+            if (destNumber == acc->getNumber()) {
+                std::cout << RED << "Erro: Não é possível transferir fundos para a sua própria conta.\n" << RESET;
+                continue;
+            }
+
             auto destAcc = bank->findAccount(destNumber);
             if (!destAcc) {
                 std::cout << RED << "Erro: Conta informada não existe no sistema.\n" << RESET;
