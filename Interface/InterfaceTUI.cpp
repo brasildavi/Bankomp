@@ -113,7 +113,7 @@ void InterfaceTUI::runLoginScreen() {
         }
 
         auto login_box = vbox({
-            text(" 🏦 BANKOMP ATM SYSTEM ") | bold | color(Color::Cyan) | center,
+            text(" 🏦 BANKOMP SYSTEM ") | bold | color(Color::Cyan) | center,
             separatorDouble(),
             filler(),
             text(" NÚMERO DA CONTA:") | dim,
@@ -514,14 +514,56 @@ void InterfaceTUI::runDashboard() {
 
         // 2. Adicionamos a análise condicionalmente ao vetor usando push_back
         if (show_score_analysis) {
+            double dep = current_account->getMonthlyDeposits();
+            double wth = current_account->getMonthlyWithdrawals();
+            double bal = current_account->getBalance();
+
             info_elements.push_back(separatorDouble());
-            info_elements.push_back(text(" ANÁLISE DO SEU PERFIL:") | bold | color(Color::Yellow));
-            if (current_account->getBalance() >= 1000) {
-                info_elements.push_back(text(" ✔️ Saldo alto mantém seu score excelente!") | color(Color::Green));
-            } else if (current_account->getBalance() > 0) {
-                info_elements.push_back(text(" ℹ️ Seu saldo é positivo, guarde mais para subir o nível.") | color(Color::Cyan));
-            } else {
-                info_elements.push_back(text(" ⚠️ Cuidado! Saldo zerado prejudica fortemente seu score.") | color(Color::Red));
+            info_elements.push_back(text(" ANÁLISE DO SEU PERFIL FINANCEIRO:") | bold | color(Color::Yellow));
+            info_elements.push_back(separatorEmpty());
+
+            info_elements.push_back(text(" [+] O que está fortalecendo seu score:") | bold | color(Color::Green));
+            bool has_good = false;
+            if (dep > wth && dep > 0) {
+                info_elements.push_back(text("  - Entradas maiores que saídas. Excelente controle financeiro!") | color(Color::Green));
+                has_good = true;
+            }
+            if (bal >= 1000) {
+                info_elements.push_back(text("  - Saldo alto e estável, garantindo uma boa pontuação base.") | color(Color::Green));
+                has_good = true;
+            }
+            if (!has_good) {
+                info_elements.push_back(text("  - Nenhum ponto forte detectado no momento.") | dim);
+            }
+
+            info_elements.push_back(separatorEmpty());
+            info_elements.push_back(text(" [~] O que pode melhorar:") | bold | color(Color::Yellow));
+            bool has_improve = false;
+            if (dep > 0 && wth >= dep) {
+                info_elements.push_back(text("  - Há entradas, mas saques/gastos estão equivalentes ou maiores.") | color(Color::Yellow));
+                has_improve = true;
+            }
+            if (bal > 0 && bal < 1000) {
+                info_elements.push_back(text("  - O saldo é positivo; guardar mais pode elevar o score.") | color(Color::Yellow));
+                has_improve = true;
+            }
+            if (!has_improve) {
+                info_elements.push_back(text("  - Nenhum alerta moderado no momento.") | dim);
+            }
+
+            info_elements.push_back(separatorEmpty());
+            info_elements.push_back(text(" [-] O que está prejudicando seu score:") | bold | color(Color::Red));
+            bool has_bad = false;
+            if (dep == 0) {
+                info_elements.push_back(text("  - Zero movimentações de entrada. Depósitos pesam bastante na nota.") | color(Color::Red));
+                has_bad = true;
+            }
+            if (bal <= 0) {
+                info_elements.push_back(text("  - Saldo zerado. Manter dinheiro na conta fortalece a pontuação.") | color(Color::Red));
+                has_bad = true;
+            }
+            if (!has_bad) {
+                info_elements.push_back(text("  - Nenhum fator crítico detectado.") | dim);
             }
         }
 

@@ -9,8 +9,11 @@ cmake --build . --config Release
 
 if %errorlevel% equ 0 (
     cls
-    inline_execution
-    Release\bankomp.exe
+    if exist Release\bankomp.exe (
+        Release\bankomp.exe
+    ) else (
+        bankomp.exe
+    )
 ) else (
     echo.
     echo [ERRO] Falha na compilacao do projeto via CMake.
