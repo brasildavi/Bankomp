@@ -433,7 +433,7 @@ void InterfaceTUI::runDashboard() {
 
         content.push_back(text(transfer_msg) | color(ok ? Color::Green : Color::Red) | center | bold);
 
-        auto form_box = vbox(std::move(content)) | border | size(WIDTH, EQUAL, 50) | size(HEIGHT, EQUAL, 23);
+        auto form_box = vbox(std::move(content)) | border | size(WIDTH, EQUAL, 50) | size(HEIGHT, EQUAL, 40);
         return center(form_box);
     });
 
