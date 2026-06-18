@@ -134,6 +134,10 @@ void InterfaceConsole::handleCreateAccount() {
             std::cout << RED << "Formato inválido! Use os pontos e o traço.\n" << RESET;
             continue;
         }
+        if (!validateCPFMath(cpf)) {
+            std::cout << RED << "Erro: Este CPF não é um número válido real.\n" << RESET;
+            continue;
+        }
         if (bank->isCpfRegistered(cpf)) {
             std::cout << RED << "Erro: Este CPF já possui uma conta no sistema!\n" << RESET;
             return;
@@ -163,16 +167,21 @@ void InterfaceConsole::handleCreateAccount() {
             std::cout << RED << "Renda não pode ser negativa.\n" << RESET;
         }
         std::cout << BLUE << "Analisando perfil...\n" << RESET;
-        sleep(1);
     }
     
     while (true) {
-        std::cout << "Crie uma Senha: ";
+        std::cout << "Crie uma Senha (8-15 caracteres, apenas letras e números): ";
         setStdinEcho(false);
         password = readStringSafe("");
         setStdinEcho(true);
+        std::cout << "\n";
+
+        if (!validatePasswordRules(password)) {
+            std::cout << RED << "Senha inválida! Deve ter entre 8 e 15 caracteres e conter apenas letras e números.\n" << RESET;
+            continue;
+        }
         
-        std::cout << "\nConfirme sua Senha: ";
+        std::cout << "Confirme sua Senha: ";
         setStdinEcho(false);
         passwordconfirm = readStringSafe("");
         setStdinEcho(true);
@@ -453,4 +462,38 @@ void InterfaceConsole::handleViewProfile(std::shared_ptr<Account> acc) {
             std::cout << RED << "Opção inválida.\n" << RESET;
         }
     }
+}
+
+bool InterfaceConsole::validateCPFMath(const std::string& cpf) {
+    std::string digits = "";
+    for (char c : cpf) {
+        if (std::isdigit(c)) digits += c;
+    }
+
+    if (digits.length() != 11) return false;
+
+    if (std::all_of(digits.begin(), digits.end(), [&](char c) { return c == digits[0]; })) {
+        return false;
+    }
+
+    int sum = 0;
+    for (int i = 0; i < 9; ++i) sum += (digits[i] - '0') * (10 - i);
+    int rem = sum % 11;
+    int d1 = (rem < 2) ? 0 : 11 - rem;
+    if (digits[9] - '0' != d1) return false;
+
+    sum = 0;
+    for (int i = 0; i < 10; ++i) sum += (digits[i] - '0') * (11 - i);
+    rem = sum % 11;
+    int d2 = (rem < 2) ? 0 : 11 - rem;
+    if (digits[10] - '0' != d2) return false;
+
+    return true;
+}
+
+bool InterfaceConsole::validatePasswordRules(const std::string& password) {
+    if (password.length() < 8 || password.length() > 15) return false;
+
+    std::regex safeRegex("^[a-zA-Z0-9]+$");
+    return std::regex_match(password, safeRegex);
 }
