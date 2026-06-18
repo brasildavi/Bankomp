@@ -1,6 +1,6 @@
 #include "Storage/DataManager.h"
 #include "Control/Bank.h"
-#include "Interface/InterfaceConsole.h"
+#include "Interface/InterfaceTUI.h"
 #include <iostream>
 #include <cstdlib>
 
@@ -29,7 +29,7 @@ int main() {
     
     bank->loadFromStorage();
 
-    auto console = std::make_unique<InterfaceConsole>(bank);
+    std::unique_ptr<InterfaceUser> console = std::make_unique<InterfaceTUI>(bank);
     console->showMenu();
 
     return 0;
