@@ -3,6 +3,7 @@
 #include "../Model/SavingAccount.h"
 #include "../Storage/Cryptography.h"
 #include <cstring>
+#include <ctime>
 
 Bank::Bank(std::shared_ptr<DataManager> dm) : dataManager(dm) {}
 

@@ -29,8 +29,8 @@ int main() {
     
     bank->loadFromStorage();
 
-    auto interface = std::make_unique<InterfaceConsole>(bank);
-    interface->showMenu();
+    auto console = std::make_unique<InterfaceConsole>(bank);
+    console->showMenu();
 
     return 0;
 }
